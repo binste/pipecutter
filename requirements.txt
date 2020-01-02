@@ -1,0 +1,4 @@
+pandas
+joblib
+luigi
+pyarrow>=0.15

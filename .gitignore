@@ -1,0 +1,5 @@
+dist
+build
+*.ipynb
+__pycache__
+*.pyc
