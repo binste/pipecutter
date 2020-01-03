@@ -42,7 +42,7 @@ setuptools.setup(
         "interactive",
         "targets",
     ],
-    python_requires=">=3.6",
+    python_requires=">=3.6,<3.8",
     license="MIT",
     classifiers=(
         "Intended Audience :: Developers",
