@@ -1,0 +1,5 @@
+[run]
+include =
+    pipecutter/*
+omit =
+    *__init__*
