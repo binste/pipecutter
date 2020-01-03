@@ -6,3 +6,5 @@ __pycache__
 .mypy_cache
 .vscode
 *.egg-info
+.coverage
+.coverage.*
