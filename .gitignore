@@ -5,3 +5,4 @@ __pycache__
 *.pyc
 .mypy_cache
 .vscode
+*.egg-info
