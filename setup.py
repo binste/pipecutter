@@ -6,9 +6,9 @@ $ tox
 $ git tag vX.Y.Z -m "Release X.Y.Z"
 $ git push --tags
 Use either pip or conda to upgrade twine and wheel
-$ pip install --upgrade twine wheel
-$ python setup.py sdist bdist_wheel
-$ twine upload dist/*
+$ python3 -m pip install --upgrade twine wheel
+$ python3 setup.py sdist bdist_wheel
+$ python3 -m twine upload dist/*
 """
 import setuptools
 from pathlib import Path
@@ -50,7 +50,6 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
         "Development Status :: 5 - Production/Stable",
     ),
 )
