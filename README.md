@@ -15,7 +15,7 @@ pipecutter provides a few tools for luigi such that it works better with data sc
 pip install pipecutter
 ```
 
-Python 3.6+ is required.
+Python 3.6+ is required. pipecutter follows [semantic versioning](https://semver.org/).
 
 # Usage
 pipecutter currently provides
