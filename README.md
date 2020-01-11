@@ -73,15 +73,17 @@ from pipecutter.targets import JoblibTarget
 from sklearn.ensemble import RandomForestClassifier
 
 class TrainModel(luigi.Task):
+    n_estimators = luigi.Parameter()
+
     def output(self):
         return JoblibTarget(self.task_id + ".pkl")
 
     def run(self):
-        model = RandomForestClassifier()
+        model = RandomForestClassifier(n_estimators=self.n_estimators)
         self.output().dump(model)
 
-pipecutter.run(TrainModel())
-# -> Produces a file called TrainModel__99914b932b.pkl
+pipecutter.run(TrainModel(n_estimators=100))
+# -> Produces a file called TrainModel_100_0b0ec0cdea.pkl
 ```
 
 # Other interesting libraries
