@@ -2,6 +2,7 @@
 Publish a new version:
 - Change version number in pipecutter/__init__.py
 - Add entry to CHANGELOG.md
+- Make sure that everything is committed and pushed
 $ pytest
 $ git tag vX.Y.Z -m "Release X.Y.Z"
 $ git push --tags
