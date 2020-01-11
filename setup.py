@@ -6,6 +6,7 @@ Publish a new version:
 $ pytest
 $ git tag vX.Y.Z -m "Release X.Y.Z"
 $ git push --tags
+- Wait for tests on TravisCI to pass and make sure that code coverage is 100%
 Use either pip or conda to upgrade twine and wheel
 $ python3 -m pip install --upgrade twine wheel
 $ python3 setup.py sdist bdist_wheel
