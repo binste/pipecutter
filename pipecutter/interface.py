@@ -22,13 +22,20 @@ def debug_mode():
 def run(
     tasks: Union[luigi.Task, List[luigi.Task]],
     local_scheduler: bool = True,
+    print_detailed_summary: bool = True,
     log_level: str = "WARNING",
     **kwargs,
-) -> bool:
+) -> None:
     tasks = [tasks] if isinstance(tasks, luigi.Task) else tasks
 
     with debug_mode():
         r = luigi.build(
-            tasks, local_scheduler=local_scheduler, log_level=log_level, **kwargs
+            tasks,
+            local_scheduler=local_scheduler,
+            log_level=log_level,
+            detailed_summary=print_detailed_summary,
+            **kwargs,
         )
-    return r
+    if print_detailed_summary:
+        print(r.summary_text)
+    return

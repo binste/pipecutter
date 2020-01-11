@@ -26,6 +26,7 @@ def assert_original_handle_run_exception_is_set():
 def test_run():
     run(MockTask())
     run([MockTask()])
+    run(MockTask(), print_detailed_summary=False)
 
 
 def test_run_raises_on_exception():
