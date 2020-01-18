@@ -1,9 +1,9 @@
-# pipecutter
+# pipecutter <!-- omit in toc -->
 [![PyPI version](http://img.shields.io/pypi/v/pipecutter.svg?style=flat-square&color=blue)](https://pypi.python.org/pypi/pipecutter/) [![Python versions](https://img.shields.io/pypi/pyversions/pipecutter.svg?style=flat-square&color=blue)]() [![build status](http://img.shields.io/travis/binste/pipecutter/master.svg?style=flat)](https://travis-ci.org/binste/pipecutter) [![coverage](https://img.shields.io/codecov/c/github/binste/pipecutter/master.svg?style=flat)](https://codecov.io/gh/binste/pipecutter?branch=master)
 
 pipecutter provides a few tools for luigi such that it works better with data science libraries and environments such as pandas, scikit-learn, and Jupyter notebooks.
 
-- [pipecutter](#pipecutter)
+# Table of contents <!-- omit in toc -->
 - [Installation](#installation)
 - [Usage](#usage)
   - [Debug in an interactive environment](#debug-in-an-interactive-environment)
