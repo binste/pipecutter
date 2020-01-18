@@ -73,6 +73,7 @@ import pipecutter
 from pipecutter.targets import JoblibTarget
 from sklearn.ensemble import RandomForestClassifier
 
+
 class TrainModel(luigi.Task):
     n_estimators = luigi.Parameter()
 
@@ -83,6 +84,7 @@ class TrainModel(luigi.Task):
         model = RandomForestClassifier(n_estimators=self.n_estimators)
         self.output().dump(model)
 
+
 pipecutter.run(TrainModel(n_estimators=100))
 # -> Produces a file called TrainModel_100_0b0ec0cdea.joblib
 ```
@@ -91,6 +93,7 @@ If you use `task_id` in the filename the above task can be written more concise 
 
 ```python
 from pipeline.targets import outputs
+
 
 @outputs(JoblibTarget)
 class TrainModel(luigi.Task):
@@ -111,6 +114,7 @@ from luigi.util import requires
 from pipecutter.targets import outputs, JoblibTarget, ParquetTarget
 from sklearn.ensemble import RandomForestClassifier
 
+
 @outputs(ParquetTarget)
 class PrepareData(luigi.Task):
     drop_missings = luigi.BoolParameter()
@@ -121,6 +125,7 @@ class PrepareData(luigi.Task):
             train_df = train_df.dropna()
 
         self.output().dump(train_df)
+
 
 @requires(PrepareData)
 @outputs(JoblibTarget)
@@ -135,6 +140,7 @@ class TrainModel(luigi.Task):
         model.fit(X, y)
 
         self.output().dump(model)
+
 
 pipecutter.run(TrainModel(n_estimators=100, drop_missings=True))
 ```
