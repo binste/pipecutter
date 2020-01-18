@@ -1,5 +1,5 @@
 import pickle
-from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod, abstractproperty
 from pathlib import Path
 from typing import Optional, Union
 
@@ -10,6 +10,10 @@ from luigi import LocalTarget
 
 
 class TargetBase(LocalTarget, ABC):
+    @abstractproperty
+    def default_file_extension(self):
+        return
+
     def load(self):
         return self._load()
 
@@ -41,6 +45,8 @@ class BinaryTargetBase(TargetBase):
 
 
 class PickleTarget(BinaryTargetBase):
+    default_file_extension = "pkl"
+
     def _load_func(self, file):
         return pickle.load(file)
 
@@ -49,6 +55,8 @@ class PickleTarget(BinaryTargetBase):
 
 
 class ParquetTarget(BinaryTargetBase):
+    default_file_extension = "parquet"
+
     def _load_func(self, file) -> pd.DataFrame:
         return pd.read_parquet(file)
 
@@ -57,8 +65,28 @@ class ParquetTarget(BinaryTargetBase):
 
 
 class JoblibTarget(BinaryTargetBase):
+    default_file_extension = "joblib"
+
     def _load_func(self, file):
         return joblib.load(file)
 
     def _dump_func(self, obj, file):
         joblib.dump(obj, file)
+
+
+class outputs:
+    def __init__(self, target: TargetBase, folder: Union[str, Path] = "data") -> None:
+        self.target = target
+        self.folder = folder if isinstance(folder, Path) else Path(folder)
+
+    def __call__(self, task):
+        def output(_self):
+            file_name = (
+                _self.task_id
+                + "."
+                + self.target.default_file_extension.replace(".", "")
+            )
+            return self.target(self.folder / file_name)
+
+        task.output = output
+        return task

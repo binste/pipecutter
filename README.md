@@ -8,6 +8,7 @@ pipecutter provides a few tools for luigi such that it works better with data sc
 - [Usage](#usage)
   - [Debug in an interactive environment](#debug-in-an-interactive-environment)
   - [Targets](#targets)
+  - [Full example](#full-example)
 - [Other interesting libraries](#other-interesting-libraries)
 
 # Installation
@@ -76,15 +77,68 @@ class TrainModel(luigi.Task):
     n_estimators = luigi.Parameter()
 
     def output(self):
-        return JoblibTarget(self.task_id + ".pkl")
+        return JoblibTarget(self.task_id + ".joblib")
 
     def run(self):
         model = RandomForestClassifier(n_estimators=self.n_estimators)
         self.output().dump(model)
 
 pipecutter.run(TrainModel(n_estimators=100))
-# -> Produces a file called TrainModel_100_0b0ec0cdea.pkl
+# -> Produces a file called TrainModel_100_0b0ec0cdea.joblib
 ```
+
+If you use `task_id` in the filename the above task can be written more concise with the `pipecutter.targets.outputs` decorator which adds the `output` method. By default it puts the files in a folder called `data`. This can be adjusted by the optional `folder` argument.
+
+```python
+from pipeline.targets import outputs
+
+@outputs(JoblibTarget)
+class TrainModel(luigi.Task):
+    n_estimators = luigi.Parameter()
+
+    def run(self):
+        model = RandomForestClassifier(n_estimators=self.n_estimators)
+        self.output().dump(model)
+```
+
+## Full example
+```python
+import luigi
+import pandas as pd
+import numpy as np
+import pipecutter
+from luigi.util import requires
+from pipecutter.targets import outputs, JoblibTarget, ParquetTarget
+from sklearn.ensemble import RandomForestClassifier
+
+@outputs(ParquetTarget)
+class PrepareData(luigi.Task):
+    drop_missings = luigi.BoolParameter()
+
+    def run(self):
+        train_df = pd.DataFrame.from_dict({"A": [0, 1, np.nan], "B": [5, 1, 2], "label": [0, 1, 1]})
+        if self.drop_missings:
+            train_df = train_df.dropna()
+
+        self.output().dump(train_df)
+
+@requires(PrepareData)
+@outputs(JoblibTarget)
+class TrainModel(luigi.Task):
+    n_estimators = luigi.Parameter()
+
+    def run(self):
+        train_df = self.input().load()
+        X, y = train_df.drop("label", axis=1), train_df["label"]
+
+        model = RandomForestClassifier(n_estimators=self.n_estimators)
+        model.fit(X, y)
+
+        self.output().dump(model)
+
+pipecutter.run(TrainModel(n_estimators=100, drop_missings=True))
+```
+
 
 # Other interesting libraries
 * [d6tflow](https://github.com/d6t/d6tflow)
