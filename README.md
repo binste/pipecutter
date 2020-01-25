@@ -145,7 +145,7 @@ train_model = TrainModel(n_estimators=100, drop_missings=True)
 pipecutter.build_graph(train_model)
 ```
 
-The last command returns a `graphviz.Digraph` object which will automatically show in a Jupyter Notebook as
+The last command can be used to visualize the dependency tree, which is especially useful if your pipelines are more complex. It returns a `graphviz.Digraph` object which will render in a Jupyter Notebook as
 
 ![build graph example](https://raw.githubusercontent.com/binste/pipecutter/master/images/build_graph_example.png)
 
