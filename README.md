@@ -9,7 +9,6 @@ pipecutter provides a few tools for luigi such that it works better with data sc
   - [Debug in an interactive environment](#debug-in-an-interactive-environment)
   - [Targets](#targets)
   - [Full example](#full-example)
-- [Other interesting libraries](#other-interesting-libraries)
 
 # Installation
 ```bash
@@ -62,7 +61,7 @@ ipdb>
 ```
 This should reduce the barrier for already using luigi tasks while developing a model and thereby making it easier to move into production later on.
 
-Additionally, you can print the dependencies of tasks with `pipecutter.print_tree` (wrapper around `luigi.tools.deps_tree.print_tree`).
+Additionally, you can print the dependencies of tasks with `pipecutter.print_tree` (wrapper around `luigi.tools.deps_tree.print_tree`) or build a graphviz Graph with `pipecutter.build_graph` which you can save as .png, .pdf, etc. or directly view in your Jupyter notebook. See the Full Example for a screenshot of how this looks. The `build_graph` function requires you to have [graphviz installed](https://graphviz.readthedocs.io/en/stable/manual.html#installation).
 
 ## Targets
 In `pipecutter.targets` you find a few targets which build on luigi's `LocalTarget` but additionally have a `load` and a `dump` method. A convenient way to name the targets is hereby to use the `task_id` in the name, which is unique with respect to the task name and its passed in parameters.
@@ -75,7 +74,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 
 class TrainModel(luigi.Task):
-    n_estimators = luigi.Parameter()
+    n_estimators = luigi.IntParameter()
 
     def output(self):
         return JoblibTarget(self.task_id + ".joblib")
@@ -97,7 +96,7 @@ from pipeline.targets import outputs
 
 @outputs(JoblibTarget)
 class TrainModel(luigi.Task):
-    n_estimators = luigi.Parameter()
+    n_estimators = luigi.IntParameter()
 
     def run(self):
         model = RandomForestClassifier(n_estimators=self.n_estimators)
@@ -130,7 +129,7 @@ class PrepareData(luigi.Task):
 @requires(PrepareData)
 @outputs(JoblibTarget)
 class TrainModel(luigi.Task):
-    n_estimators = luigi.Parameter()
+    n_estimators = luigi.IntParameter()
 
     def run(self):
         train_df = self.input().load()
@@ -142,10 +141,15 @@ class TrainModel(luigi.Task):
         self.output().dump(model)
 
 
-pipecutter.run(TrainModel(n_estimators=100, drop_missings=True))
+train_model = TrainModel(n_estimators=100, drop_missings=True)
+pipecutter.build_graph(train_model)
 ```
 
+The last command returns a `graphviz.Digraph` object which will automatically show in a Jupyter Notebook as
 
-# Other interesting libraries
-* [d6tflow](https://github.com/d6t/d6tflow)
-* [sciluigi](https://github.com/pharmbio/sciluigi)
+![build graph example](https://raw.githubusercontent.com/binste/pipecutter/master/images/build_graph_example.png)
+
+Finally, run the tasks with:
+```
+pipecutter.run(train_model)
+```
