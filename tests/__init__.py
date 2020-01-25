@@ -15,3 +15,11 @@ class MockTaskWhichFails(MockTask):
 class MockTaskProcess:
     worker_id = 1
     task = MockTask()
+
+
+class CompleteDownstreamTask(MockTask):
+    def complete(self):
+        return True
+
+    def requires(self):
+        return MockTask()
