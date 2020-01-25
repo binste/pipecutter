@@ -1,4 +1,4 @@
-from pipecutter.deps import print_tree
+from pipecutter.deps import print_tree, build_graph
 from pipecutter.interface import run
 
-__version__ = "1.2.0"
+__version__ = "2.0.0.dev"
