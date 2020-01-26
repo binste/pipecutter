@@ -18,6 +18,7 @@ import pipecutter
 
 HERE = Path(__file__).parent
 README = (HERE / "README.md").read_text()
+REQUIREMENTS = (HERE / "requirements.txt").read_text().split("\n")
 
 setuptools.setup(
     name="pipecutter",
@@ -25,8 +26,9 @@ setuptools.setup(
     author="Stefan Binder",
     url="https://github.com/binste/pipecutter",
     description=(
-        "Some tools for Luigi to cut down the length of your pipelines and work"
-        " in interactive environments such as Jupyter notebooks."
+        "pipecutter provides a few tools for luigi such that it works better"
+        + " with data science libraries and environments such as pandas,"
+        + " scikit-learn, and Jupyter notebooks."
     ),
     long_description=README,
     long_description_content_type="text/markdown",
@@ -44,6 +46,12 @@ setuptools.setup(
         "targets",
     ],
     python_requires=">=3.6,<3.8",
+    install_requires=REQUIREMENTS,
+    extras_require={
+        "dev": ["black"],
+        "test": ["pytest", "flake8", "mypy", "black"],
+        "graphviz": ["graphviz"],
+    },
     license="MIT",
     classifiers=(
         "Intended Audience :: Developers",
