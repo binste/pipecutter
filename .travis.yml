@@ -2,9 +2,14 @@ language: python
 python:
   - "3.6"
   - "3.7"
+addons:
+  apt:
+    packages:
+      - graphviz
 install:
   - pip install -r requirements.txt
   - pip install black flake8 mypy codecov pytest-cov pytest
+  - pip install graphviz
 script:
   - black --check pipecutter tests setup.py
   - flake8 pipecutter tests --max-line-length=88 --ignore=W503 --exclude pipecutter/__init__.py
