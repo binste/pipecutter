@@ -1,4 +1,4 @@
 pandas>=0.21
 joblib>=0.11
 luigi>=2.8.5
-pyarrow
+pyarrow==0.15
