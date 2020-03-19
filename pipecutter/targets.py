@@ -1,7 +1,7 @@
 import pickle
 from abc import ABC, abstractmethod, abstractproperty
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional, Union, Dict, Any
 
 import joblib
 import luigi.format
@@ -76,18 +76,40 @@ class JoblibTarget(BinaryTargetBase):
 
 
 class outputs:
-    def __init__(self, target: TargetBase, folder: Union[str, Path] = "data") -> None:
-        self.target = target
+    def __init__(
+        self,
+        targets: Union[TargetBase, Dict[Any, TargetBase]],
+        folder: Union[str, Path] = "data",
+    ) -> None:
+        self._validate_targets(targets)
+
+        self.targets = targets
         self.folder = folder if isinstance(folder, Path) else Path(folder)
 
+    def _validate_targets(self, targets):
+        try:
+            assert (
+                isinstance(targets, dict)
+                and all(issubclass(v, TargetBase) for v in targets.values())
+            ) or issubclass(targets, TargetBase)
+        except TypeError:
+            # TODO: Improve this error message to be more informative
+            raise AssertionError("Probably no class was passed")
+
     def __call__(self, task):
+        def _create_file_name(task_id: str, target: TargetBase) -> str:
+            return task_id + "." + target.default_file_extension.replace(".", "")
+
         def output(_self):
-            file_name = (
-                _self.task_id
-                + "."
-                + self.target.default_file_extension.replace(".", "")
-            )
-            return self.target(self.folder / file_name)
+            if isinstance(self.targets, dict):
+                prepared_targets = {}
+                for name, target in self.targets.items():
+                    file_name = _create_file_name(_self.task_id + "_" + name, target)
+                    prepared_targets[name] = target(self.folder / file_name)
+                return prepared_targets
+            else:
+                file_name = _create_file_name(_self.task_id, self.targets)
+                return self.targets(self.folder / file_name)
 
         task.output = output
         return task

@@ -83,3 +83,30 @@ def test_remove_targets(Target, file_extension, tmp_path, example_dataframe):
 
     remove_targets(task)
     assert not output.exists()
+
+
+@pytest.mark.parametrize(
+    "targets", ["string_target", [ParquetTarget], {"target_name": "string_target"}]
+)
+def test_outputs_raises_on_wrong_targets(targets):
+    with pytest.raises(AssertionError):
+
+        @outputs(targets)
+        class MockTask(luigi.Task):
+            pass
+
+
+def test_multiple_outputs(tmp_path, example_dataframe):
+    @outputs({"X_train": ParquetTarget, "X_test": ParquetTarget}, folder=tmp_path)
+    class MockOutputTask(luigi.Task):
+        def run(self):
+            outputs = self.output()
+            outputs["X_train"].dump(example_dataframe)
+            outputs["X_test"].dump(example_dataframe)
+
+    task = MockOutputTask()
+    pipecutter.run(task)
+    all_outputs = task.output()
+    for name, out in all_outputs.items():
+        assert out.exists()
+        assert name in out.path
