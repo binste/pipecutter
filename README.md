@@ -103,6 +103,8 @@ class TrainModel(luigi.Task):
         self.output().dump(model)
 ```
 
+You can also pass a dictionary to `pipecutter.targets.outputs` with a string as the key and a target which inherits from `pipecutter.targets.TargetBase` as the value.
+
 ## Full example
 ```python
 import luigi

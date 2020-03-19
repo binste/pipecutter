@@ -1,7 +1,7 @@
 import pickle
 from abc import ABC, abstractmethod, abstractproperty
 from pathlib import Path
-from typing import Optional, Union, Dict, Any
+from typing import Optional, Union, Dict
 
 import joblib
 import luigi.format
@@ -78,7 +78,7 @@ class JoblibTarget(BinaryTargetBase):
 class outputs:
     def __init__(
         self,
-        targets: Union[TargetBase, Dict[Any, TargetBase]],
+        targets: Union[TargetBase, Dict[str, TargetBase]],
         folder: Union[str, Path] = "data",
     ) -> None:
         self._validate_targets(targets)
