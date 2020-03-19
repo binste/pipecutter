@@ -4,7 +4,19 @@ import pandas as pd
 from luigi.mock import MockTarget
 
 import pipecutter
-from pipecutter.targets import JoblibTarget, ParquetTarget, PickleTarget, outputs
+from pipecutter.targets import (
+    JoblibTarget,
+    ParquetTarget,
+    PickleTarget,
+    outputs,
+    remove_targets,
+)
+
+targets_and_ext_to_test = [
+    (ParquetTarget, ".parquet"),
+    (PickleTarget, ".pkl"),
+    (JoblibTarget, ".joblib"),
+]
 
 
 @pytest.fixture()
@@ -12,10 +24,7 @@ def example_dataframe():
     return pd.DataFrame([[1, 2], [3, 4]], columns=["A", "B"]).set_index("A")
 
 
-@pytest.mark.parametrize(
-    "Target,file_extension",
-    [(ParquetTarget, ".parquet"), (PickleTarget, ".pkl"), (JoblibTarget, ".joblib")],
-)
+@pytest.mark.parametrize("Target,file_extension", targets_and_ext_to_test)
 def test_dataframe_compatible_targets(
     Target, file_extension, tmp_path, example_dataframe
 ):
@@ -28,10 +37,7 @@ def test_dataframe_compatible_targets(
     assert loaded_data.equals(example_dataframe)
 
 
-@pytest.mark.parametrize(
-    "Target,file_extension",
-    [(ParquetTarget, "parquet"), (PickleTarget, "pkl"), (JoblibTarget, "joblib")],
-)
+@pytest.mark.parametrize("Target,file_extension", targets_and_ext_to_test)
 def test_output(Target, file_extension, tmp_path, example_dataframe):
     @outputs(Target, folder=tmp_path)
     class MockOutputTask(luigi.Task):
@@ -61,3 +67,19 @@ def test_output_default_folder():
     t = MockOutputTask()
 
     assert str(t.output().path) == f"data/{t.task_id}.joblib"
+
+
+@pytest.mark.parametrize("Target,file_extension", targets_and_ext_to_test)
+def test_remove_targets(Target, file_extension, tmp_path, example_dataframe):
+    @outputs(Target, folder=tmp_path)
+    class MockOutputTask(luigi.Task):
+        def run(self):
+            self.output().dump(example_dataframe)
+
+    task = MockOutputTask()
+    pipecutter.run(task)
+    output = task.output()
+    assert output.exists()
+
+    remove_targets(task)
+    assert not output.exists()

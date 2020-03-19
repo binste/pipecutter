@@ -6,6 +6,7 @@ from typing import Optional, Union
 import joblib
 import luigi.format
 import pandas as pd
+import luigi.task
 from luigi import LocalTarget
 
 
@@ -90,3 +91,11 @@ class outputs:
 
         task.output = output
         return task
+
+
+def remove_targets(task):
+    outputs = luigi.task.flatten(task.output())
+    for out in outputs:
+        if out.exists():
+            out.remove()
+        assert not out.exists()
